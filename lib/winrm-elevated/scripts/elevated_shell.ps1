@@ -1,10 +1,14 @@
 param([String]$username, [String]$password, [String]$encoded_command)
 
 $task_name = "WinRM_Elevated_Shell"
-$out_file = "$env:SystemRoot\Temp\WinRM_Elevated_Shell.log"
+$out_file = "$env:Temp\winrm_elevated_out.log"
+$err_file = "$env:Temp\winrm_elevated_err.log"
 
 if (Test-Path $out_file) {
   del $out_file
+}
+if (Test-Path $err_file) {
+  del $err_file
 }
 
 $task_xml = @'
@@ -45,7 +49,7 @@ $task_xml = @'
 </Task>
 '@
 
-$arguments = "/c powershell.exe -EncodedCommand $encoded_command &gt; $out_file 2&gt;&amp;1"
+$arguments = "/c powershell.exe -EncodedCommand $encoded_command &gt; $out_file 2&gt;$err_file"
 
 $task_xml = $task_xml.Replace("{arguments}", $arguments)
 $task_xml = $task_xml.Replace("{username}", $username)
@@ -67,20 +71,26 @@ while ( (!($registered_task.state -eq 4)) -and ($sec -lt $timeout) ) {
   $sec++
 }
 
-function SlurpOutput($out_file, $cur_line) {
-  if (Test-Path $out_file) {
-    get-content $out_file | select -skip $cur_line | ForEach {
+function SlurpOutput($file, $cur_line, $out_type) {
+  if (Test-Path $file) {
+    get-content $file | select -skip $cur_line | ForEach {
       $cur_line += 1
-      Write-Host "$_" 
+      if ($out_type -eq 'err') {
+        $host.ui.WriteErrorLine("$_")
+      } else {
+        $host.ui.WriteLine("$_")
+      }
     }
   }
   return $cur_line
 }
 
-$cur_line = 0
+$err_cur_line = 0
+$out_cur_line = 0
 do {
   Start-Sleep -m 100
-  $cur_line = SlurpOutput $out_file $cur_line
+  $out_cur_line = SlurpOutput $out_file $out_cur_line 'out'
+  $err_cur_line = SlurpOutput $err_file $err_cur_line 'err'
 } while (!($registered_task.state -eq 3))
 
 $exit_code = $registered_task.LastTaskResult
