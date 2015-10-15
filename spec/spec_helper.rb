@@ -9,9 +9,9 @@ module ConnectionHelper
     WinRM::WinRMWebService.new(
       winrm_config['endpoint'],
       winrm_config['auth_type'].to_sym,
-      :user => username,
-      :pass => password,
-      :basic_auth_only => true)
+      user: username,
+      pass: password,
+      basic_auth_only: true)
   end
 
   def elevated_runner
@@ -22,7 +22,7 @@ module ConnectionHelper
     unless @winrm_config
       path = File.expand_path("#{File.dirname(__FILE__)}/config.yml")
       unless File.exist?(path)
-        path = File.expand_path("#{File.dirname(__FILE__)}/config-example.yml") 
+        path = File.expand_path("#{File.dirname(__FILE__)}/config-example.yml")
       end
       @winrm_config = YAML.load(File.read(path))
     end

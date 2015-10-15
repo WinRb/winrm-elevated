@@ -62,4 +62,3 @@ RSpec::Matchers.define :have_exit_code do |expected_exit_code|
     "expected exit code #{expected_exit_code}, but got #{actual_output[:exitcode]}"
   end
 end
-
