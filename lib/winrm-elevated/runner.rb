@@ -1,0 +1,60 @@
+require 'winrm'
+require 'winrm-fs'
+
+module WinRM
+  module Elevated
+    # Runs PowerShell commands elevated via a scheduled task
+    class Runner
+      # Creates a new Elevated Runner instance
+      # @param [WinRMWebService] WinRM web service client
+      def initialize(winrm_service)
+        @winrm_service = winrm_service
+        @winrm_file_manager = WinRM::FS::FileManager.new(winrm_service)
+        @elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell.ps1'
+      end
+
+      # Run a command or PowerShell script elevated without any of the
+      # restrictions that WinRM puts in place.
+      #
+      # @param [String] The command or PS script to wrap in a scheduled task
+      # @param [String] The admin user name to execute the scheduled task as
+      # @param [String] The admin user password
+      #
+      # @return [Hash] :stdout and :stderr
+      def powershell_elevated(script, username, password, &block)
+        # if an IO object is passed read it, otherwise assume the contents of the file were passed
+        script_text = script.respond_to?(:read) ? script.read : script
+        
+        upload_elevated_shell_wrapper_script
+        wrapped_script = wrap_in_scheduled_task(script_text, username, password)
+        @winrm_service.run_cmd(wrapped_script, &block)
+      end
+
+      private
+
+      def upload_elevated_shell_wrapper_script
+        file = Tempfile.new(["winrm-elevated-shell", "ps1"])
+        begin
+          file.write(elevated_shell_script_content)
+          file.fsync
+          file.close
+          @winrm_file_manager.upload(file.path, @elevated_shell_path)
+        ensure
+          file.close
+          file.unlink
+        end
+      end
+
+      def elevated_shell_script_content
+        IO.read(File.expand_path("../scripts/elevated_shell.ps1", __FILE__))
+      end
+
+      def wrap_in_scheduled_task(script_text, username, password)
+        ps_script = WinRM::PowershellScript.new(script_text)
+        "powershell -executionpolicy bypass -file \"#{@elevated_shell_path}\" " +
+          "-username \"#{username}\" -password \"#{password}\" " +
+          "-encoded_command \"#{ps_script.encoded}\""
+      end
+    end
+  end
+end
