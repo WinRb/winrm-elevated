@@ -1,4 +1,4 @@
-param([String]$username, [String]$password, [String]$encoded_command)
+param([String]$username, [String]$password, [String]$encoded_command, [String]$timeout)
 
 $task_name = "WinRM_Elevated_Shell"
 $out_file = "$env:Temp\winrm_elevated_out.log"
@@ -37,7 +37,7 @@ $task_xml = @'
     <Hidden>false</Hidden>
     <RunOnlyIfIdle>false</RunOnlyIfIdle>
     <WakeToRun>false</WakeToRun>
-    <ExecutionTimeLimit>PT2H</ExecutionTimeLimit>
+    <ExecutionTimeLimit>{timeout}</ExecutionTimeLimit>
     <Priority>4</Priority>
   </Settings>
   <Actions Context="Author">
@@ -53,6 +53,7 @@ $arguments = "/c powershell.exe -EncodedCommand $encoded_command &gt; $out_file 
 
 $task_xml = $task_xml.Replace("{arguments}", $arguments)
 $task_xml = $task_xml.Replace("{username}", $username)
+$task_xml = $task_xml.Replace("{timeout}", $timeout)
 
 $schedule = New-Object -ComObject "Schedule.Service"
 $schedule.Connect()
