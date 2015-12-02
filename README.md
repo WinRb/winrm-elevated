@@ -1,6 +1,8 @@
 # Runs PowerShell commands as elevated over Windows Remote Management (WinRM) via a scheduled task
 [![Gem Version](https://badge.fury.io/rb/winrm-elevated.svg)](http://badge.fury.io/rb/winrm-elevated)
 
+This gem allows you to break out of the magical WinRM constraints thus allowing to reach out to network shares and even install Windows updates, .NET, SQL Server etc.
+
 ## Running commands elevated
 ```ruby
 require 'winrm'
@@ -12,6 +14,16 @@ result = elevated_runner.powershell_elevated('dir', 'Administrator', 'password')
 puts "Std out: #{result.output}"
 ```
 
+## How does it work?
+
+The gem works by creating a new logon session local to the Windows box by using a scheduled task. After this point WinRM is just used to read output from the scheduled task via a log file.
+
+1. The command you'd like to run outside the WinRM context is encoded and placed inside the PowerShell script elevated_shell.ps1.
+2. The script is uploaded to the machine over WinRM.
+3. The script is executed over WinRM and the script does the following:
+  1. Scheduled task is created which will execute your command and redirect stdout and stderr to a location known by elevated_shell.ps1.
+  2. The scheduled task is executed.
+  3. elevated_shell.ps1 polls the stdout and stderr log files and writes them back to WinRM. The script continues in this loop until the scheduled task is complete.
 
 ## Troubleshooting
 
