@@ -51,17 +51,21 @@ module WinRM
 
       def upload_elevated_shell_wrapper_script
         return if @uploaded
-        file = Tempfile.new(['winrm-elevated-shell', 'ps1'])
-        begin
-          file.write(elevated_shell_script_content)
-          file.fsync
-          file.close
-          @winrm_file_manager.upload(file.path, @elevated_shell_path)
+        with_temp_file do |temp_file|
+          @winrm_file_manager.upload(temp_file, @elevated_shell_path)
           @uploaded = true
-        ensure
-          file.close
-          file.unlink
         end
+      end
+
+      def with_temp_file
+        file = Tempfile.new(['winrm-elevated-shell', 'ps1'])
+        file.write(elevated_shell_script_content)
+        file.fsync
+        file.close
+        yield file.path
+      ensure
+        file.close
+        file.unlink
       end
 
       def elevated_shell_script_content
