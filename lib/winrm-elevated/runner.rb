@@ -27,6 +27,7 @@ module WinRM
         @winrm_service = winrm_service
         @winrm_file_manager = WinRM::FS::FileManager.new(winrm_service)
         @elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell.ps1'
+        @uploaded            = nil
       end
 
       # Run a command or PowerShell script elevated without any of the
@@ -49,12 +50,14 @@ module WinRM
       private
 
       def upload_elevated_shell_wrapper_script
+        return if @uploaded
         file = Tempfile.new(['winrm-elevated-shell', 'ps1'])
         begin
           file.write(elevated_shell_script_content)
           file.fsync
           file.close
           @winrm_file_manager.upload(file.path, @elevated_shell_path)
+          @uploaded = true
         ensure
           file.close
           file.unlink
