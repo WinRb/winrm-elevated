@@ -16,6 +16,7 @@
 
 require 'winrm'
 require 'winrm-fs'
+require 'securerandom'
 
 module WinRM
   module Elevated
@@ -26,7 +27,7 @@ module WinRM
       def initialize(winrm_service)
         @winrm_service = winrm_service
         @winrm_file_manager = WinRM::FS::FileManager.new(winrm_service)
-        @elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell.ps1'
+        @elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell-' + SecureRandom.uuid + '.ps1'
         @uploaded            = nil
       end
 

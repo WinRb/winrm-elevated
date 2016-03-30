@@ -1,15 +1,8 @@
 param([String]$username, [String]$password, [String]$encoded_command, [String]$timeout)
 
 $task_name = "WinRM_Elevated_Shell"
-$out_file = "$env:Temp\winrm_elevated_out.log"
-$err_file = "$env:Temp\winrm_elevated_err.log"
-
-if (Test-Path $out_file) {
-  del $out_file
-}
-if (Test-Path $err_file) {
-  del $err_file
-}
+$out_file = [System.IO.Path]::GetTempFileName()
+$err_file = [System.IO.Path]::GetTempFileName()
 
 $task_xml = @'
 <?xml version="1.0" encoding="UTF-16"?>
@@ -93,6 +86,9 @@ do {
   $out_cur_line = SlurpOutput $out_file $out_cur_line 'out'
   $err_cur_line = SlurpOutput $err_file $err_cur_line 'err'
 } while (!($registered_task.state -eq 3))
+
+del $out_file
+del $err_file
 
 $exit_code = $registered_task.LastTaskResult
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null
