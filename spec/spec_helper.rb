@@ -25,7 +25,7 @@ module ConnectionHelper
         path = File.expand_path("#{File.dirname(__FILE__)}/config-example.yml")
       end
       @winrm_config = YAML.load(File.read(path))
-      @winrm_config[:endpoint] = ENV['winrm_endpoint'] if ENV['winrm_endpoint']
+      @winrm_config['endpoint'] = ENV['winrm_endpoint'] if ENV['winrm_endpoint']
     end
     @winrm_config
   end
