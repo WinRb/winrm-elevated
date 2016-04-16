@@ -26,6 +26,8 @@ module ConnectionHelper
       end
       @winrm_config = YAML.load(File.read(path))
       @winrm_config['endpoint'] = ENV['winrm_endpoint'] if ENV['winrm_endpoint']
+      @winrm_config['options']['user'] = ENV['winrm_user'] if ENV['winrm_user']
+      @winrm_config['options']['pass'] = ENV['winrm_pass'] if ENV['winrm_pass']
     end
     @winrm_config
   end
