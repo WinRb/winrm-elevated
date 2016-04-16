@@ -1,5 +1,9 @@
 # WinRM-Elevated Gem Changelog
 
+# 0.4.0
+- Run commands from newer winrm executor
+- Use latest winrm-fs 0.4.2
+
 # 0.3.0
 - [Name Powershell Script and Log Files Uniquely](https://github.com/WinRb/winrm-elevated/pull/6)
 
