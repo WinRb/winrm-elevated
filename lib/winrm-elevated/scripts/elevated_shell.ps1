@@ -56,14 +56,24 @@ $folder = $schedule.GetFolder("\")
 $folder.RegisterTaskDefinition($task_name, $task, 6, $username, $password, 1, $null) | Out-Null
 
 $registered_task = $folder.GetTask("\$task_name")
+$current_tasks=@()
+$current_tasks += Get-WmiObject -Class Win32_Process -Filter "name = 'powershell.exe' and CommandLine like '%$encoded_command%'" |
+  select ProcessId |
+  % { $_.ProcessId }
+
 $registered_task.Run($null) | Out-Null
 
 $timeout = 10
 $sec = 0
-while ( (!($registered_task.state -eq 4)) -and ($sec -lt $timeout) ) {
-  Start-Sleep -s 1
-  $sec++
+
+do{
+  $taskProc=Get-WmiObject -Class Win32_Process -Filter "name = 'powershell.exe' and CommandLine like '%$encoded_command%'" |
+    select ProcessId |
+    % { $_.ProcessId } |
+    ? { !($current_tasks -contains $_) }
 }
+Until($taskProc -ne $null)
+$waitProc=get-process -id $taskProc -ErrorAction SilentlyContinue
 
 function SlurpOutput($file, $cur_line, $out_type) {
   if (Test-Path $file) {
@@ -82,15 +92,20 @@ function SlurpOutput($file, $cur_line, $out_type) {
 $err_cur_line = 0
 $out_cur_line = 0
 do {
-  Start-Sleep -m 100
+  Start-Sleep -m 1000
   $out_cur_line = SlurpOutput $out_file $out_cur_line 'out'
   $err_cur_line = SlurpOutput $err_file $err_cur_line 'err'
-} while (!($registered_task.state -eq 3))
+} while ($waitProc -ne $null -and !$waitProc.HasExited)
+
+$exit_code = $registered_task.LastTaskResult
+# 259 indicates STILL_ACTIVE. We assume 0
+# At some point we can investigate being more
+# sophisticated to get the final exit code in
+# this case.
+if($exit_code -eq 259) { $exit_code = 0 }
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null
 
 del $out_file
 del $err_file
-
-$exit_code = $registered_task.LastTaskResult
-[System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null
 
 exit $exit_code
