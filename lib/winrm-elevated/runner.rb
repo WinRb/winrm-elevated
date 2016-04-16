@@ -26,6 +26,7 @@ module WinRM
       # @param [WinRMWebService] WinRM web service client
       def initialize(winrm_service)
         @winrm_service = winrm_service
+        @executor = winrm_service.create_executor
         @winrm_file_manager = WinRM::FS::FileManager.new(winrm_service)
         @elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell-' + SecureRandom.uuid + '.ps1'
         @uploaded            = nil
@@ -45,7 +46,7 @@ module WinRM
 
         upload_elevated_shell_wrapper_script
         wrapped_script = wrap_in_scheduled_task(script_text, username, password)
-        @winrm_service.run_cmd(wrapped_script, &block)
+        @executor.run_cmd(wrapped_script, &block)
       end
 
       private
