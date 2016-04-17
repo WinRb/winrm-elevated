@@ -92,7 +92,7 @@ function SlurpOutput($file, $cur_line, $out_type) {
 $err_cur_line = 0
 $out_cur_line = 0
 do {
-  Start-Sleep -m 1000
+  Start-Sleep -m 100
   $out_cur_line = SlurpOutput $out_file $out_cur_line 'out'
   $err_cur_line = SlurpOutput $err_file $err_cur_line 'err'
 } while ($waitProc -ne $null -and !$waitProc.HasExited)
