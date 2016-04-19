@@ -107,6 +107,9 @@ do {
   $err_cur_line = SlurpOutput $err_file $err_cur_line 'err'
 } while ($waitProc -ne $null -and !$waitProc.HasExited)
 
+#task might still be running and we wont get exit code
+do { sleep -m 100 } while (!($registered_task.state -eq 3))
+
 $exit_code = $registered_task.LastTaskResult
 # 259 indicates STILL_ACTIVE. We assume 0
 # At some point we can investigate being more
