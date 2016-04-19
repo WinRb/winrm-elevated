@@ -14,6 +14,18 @@ result = elevated_runner.powershell_elevated('dir', 'Administrator', 'password')
 puts "Std out: #{result.output}"
 ```
 
+### Impersonating a service account
+By passing a `nil` password, winrm-elevated will assume that the command should run as a service account:
+```ruby
+require 'winrm'
+require 'winrm-elevated'
+
+service = WinRM::WinRMWebService.new(...
+elevated_runner = WinRM::Elevated::Runner.new(service)
+result = elevated_runner.powershell_elevated('dir', 'System', nil)
+puts "Std out: #{result.output}"
+```
+
 ## How does it work?
 
 The gem works by creating a new logon session local to the Windows box by using a scheduled task. After this point WinRM is just used to read output from the scheduled task via a log file.
