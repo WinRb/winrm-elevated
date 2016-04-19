@@ -1,4 +1,4 @@
-param([String]$username, [String]$password, [String]$encoded_command, [String]$timeout)
+param([String]$username, [String]$password, [String]$encoded_command)
 
 $pass_to_use = $password
 $logon_type = 1
@@ -39,7 +39,7 @@ $task_xml = @'
     <Hidden>false</Hidden>
     <RunOnlyIfIdle>false</RunOnlyIfIdle>
     <WakeToRun>false</WakeToRun>
-    <ExecutionTimeLimit>{timeout}</ExecutionTimeLimit>
+    <ExecutionTimeLimit>PT24H</ExecutionTimeLimit>
     <Priority>4</Priority>
   </Settings>
   <Actions Context="Author">
@@ -55,7 +55,6 @@ $arguments = "/c powershell.exe -EncodedCommand $encoded_command &gt; $out_file 
 
 $task_xml = $task_xml.Replace("{arguments}", $arguments)
 $task_xml = $task_xml.Replace("{username}", $username)
-$task_xml = $task_xml.Replace("{timeout}", $timeout)
 $task_xml = $task_xml.Replace("{logon_type}", $logon_type_xml)
 
 $schedule = New-Object -ComObject "Schedule.Service"
@@ -66,24 +65,14 @@ $folder = $schedule.GetFolder("\")
 $folder.RegisterTaskDefinition($task_name, $task, 6, $username, $pass_to_use, $logon_type, $null) | Out-Null
 
 $registered_task = $folder.GetTask("\$task_name")
-$current_tasks=@()
-$current_tasks += Get-WmiObject -Class Win32_Process -Filter "name = 'powershell.exe' and CommandLine like '%$encoded_command%'" |
-  select ProcessId |
-  % { $_.ProcessId }
-
 $registered_task.Run($null) | Out-Null
 
 $timeout = 10
 $sec = 0
-
-do{
-  $taskProc=Get-WmiObject -Class Win32_Process -Filter "name = 'powershell.exe' and CommandLine like '%$encoded_command%'" |
-    select ProcessId |
-    % { $_.ProcessId } |
-    ? { !($current_tasks -contains $_) }
+while ( (!($registered_task.state -eq 4)) -and ($sec -lt $timeout) ) {
+  Start-Sleep -s 1
+  $sec++
 }
-Until($taskProc -ne $null)
-$waitProc=get-process -id $taskProc -ErrorAction SilentlyContinue
 
 function SlurpOutput($file, $cur_line, $out_type) {
   if (Test-Path $file) {
@@ -105,20 +94,12 @@ do {
   Start-Sleep -m 100
   $out_cur_line = SlurpOutput $out_file $out_cur_line 'out'
   $err_cur_line = SlurpOutput $err_file $err_cur_line 'err'
-} while ($waitProc -ne $null -and !$waitProc.HasExited)
-
-#task might still be running and we wont get exit code
-do { sleep -m 100 } while (!($registered_task.state -eq 3))
-
-$exit_code = $registered_task.LastTaskResult
-# 259 indicates STILL_ACTIVE. We assume 0
-# At some point we can investigate being more
-# sophisticated to get the final exit code in
-# this case.
-if($exit_code -eq 259) { $exit_code = 0 }
-[System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null
+} while (!($registered_task.state -eq 3))
 
 del $out_file
 del $err_file
+
+$exit_code = $registered_task.LastTaskResult
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null
 
 exit $exit_code

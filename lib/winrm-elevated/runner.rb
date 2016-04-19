@@ -77,8 +77,7 @@ module WinRM
       def wrap_in_scheduled_task(script_text, username, password)
         ps_script = WinRM::PowershellScript.new(script_text)
         "powershell -executionpolicy bypass -file \"#{@elevated_shell_path}\" " \
-          "-username \"#{username}\" -password \"#{password}\" -timeout \"#{@winrm_service.timeout}\" " \
-          "-encoded_command \"#{ps_script.encoded}\""
+          "-username \"#{username}\" -password \"#{password}\" -encoded_command \"#{ps_script.encoded}\""
       end
     end
   end
