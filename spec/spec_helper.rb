@@ -15,7 +15,7 @@ module ConnectionHelper
   end
 
   def elevated_runner
-    @elevated_runner ||= WinRM::Elevated::Runner.new(winrm_connection)
+    @elevated_runner ||= WinRM::Elevated::Runner.new(winrm_connection.create_executor)
   end
 
   def winrm_config

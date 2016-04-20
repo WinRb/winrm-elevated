@@ -1,6 +1,7 @@
 # WinRM-Elevated Gem Changelog
 
 # 0.4.0
+- Initialize `Elevated::Runner` with a `CommandExecutor` instead of a `WinrmService` client
 - Run commands from newer winrm executor
 - Use latest winrm-fs 0.4.2
 - Allow task to run as a service account

@@ -23,11 +23,10 @@ module WinRM
     # Runs PowerShell commands elevated via a scheduled task
     class Runner
       # Creates a new Elevated Runner instance
-      # @param [WinRMWebService] WinRM web service client
-      def initialize(winrm_service)
-        @winrm_service = winrm_service
-        @executor = winrm_service.create_executor
-        @winrm_file_manager = WinRM::FS::FileManager.new(winrm_service)
+      # @param [CommandExecutor] a winrm CommandExecutor
+      def initialize(executor)
+        @executor = executor
+        @winrm_file_transporter = WinRM::FS::Core::FileTransporter.new(executor)
         @elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell-' + SecureRandom.uuid + '.ps1'
         @uploaded            = nil
       end
@@ -54,7 +53,7 @@ module WinRM
       def upload_elevated_shell_wrapper_script
         return if @uploaded
         with_temp_file do |temp_file|
-          @winrm_file_manager.upload(temp_file, @elevated_shell_path)
+          @winrm_file_transporter.upload(temp_file, @elevated_shell_path)
           @uploaded = true
         end
       end
