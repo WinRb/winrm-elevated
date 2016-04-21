@@ -23,10 +23,10 @@ module WinRM
     # Runs PowerShell commands elevated via a scheduled task
     class Runner
       # Creates a new Elevated Runner instance
-      # @param [WinRMWebService] WinRM web service client
-      def initialize(winrm_service)
-        @winrm_service = winrm_service
-        @winrm_file_manager = WinRM::FS::FileManager.new(winrm_service)
+      # @param [CommandExecutor] a winrm CommandExecutor
+      def initialize(executor)
+        @executor = executor
+        @winrm_file_transporter = WinRM::FS::Core::FileTransporter.new(executor)
         @elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell-' + SecureRandom.uuid + '.ps1'
         @uploaded            = nil
       end
@@ -45,7 +45,7 @@ module WinRM
 
         upload_elevated_shell_wrapper_script
         wrapped_script = wrap_in_scheduled_task(script_text, username, password)
-        @winrm_service.run_cmd(wrapped_script, &block)
+        @executor.run_cmd(wrapped_script, &block)
       end
 
       private
@@ -53,7 +53,7 @@ module WinRM
       def upload_elevated_shell_wrapper_script
         return if @uploaded
         with_temp_file do |temp_file|
-          @winrm_file_manager.upload(temp_file, @elevated_shell_path)
+          @winrm_file_transporter.upload(temp_file, @elevated_shell_path)
           @uploaded = true
         end
       end
@@ -76,8 +76,7 @@ module WinRM
       def wrap_in_scheduled_task(script_text, username, password)
         ps_script = WinRM::PowershellScript.new(script_text)
         "powershell -executionpolicy bypass -file \"#{@elevated_shell_path}\" " \
-          "-username \"#{username}\" -password \"#{password}\" -timeout \"#{@winrm_service.timeout}\" " \
-          "-encoded_command \"#{ps_script.encoded}\""
+          "-username \"#{username}\" -password \"#{password}\" -encoded_command \"#{ps_script.encoded}\""
       end
     end
   end

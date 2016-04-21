@@ -15,7 +15,7 @@ module ConnectionHelper
   end
 
   def elevated_runner
-    @elevated_runner ||= WinRM::Elevated::Runner.new(winrm_connection)
+    @elevated_runner ||= WinRM::Elevated::Runner.new(winrm_connection.create_executor)
   end
 
   def winrm_config
@@ -25,6 +25,9 @@ module ConnectionHelper
         path = File.expand_path("#{File.dirname(__FILE__)}/config-example.yml")
       end
       @winrm_config = YAML.load(File.read(path))
+      @winrm_config['endpoint'] = ENV['winrm_endpoint'] if ENV['winrm_endpoint']
+      @winrm_config['options']['user'] = ENV['winrm_user'] if ENV['winrm_user']
+      @winrm_config['options']['pass'] = ENV['winrm_pass'] if ENV['winrm_pass']
     end
     @winrm_config
   end

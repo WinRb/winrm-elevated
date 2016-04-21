@@ -9,9 +9,25 @@ require 'winrm'
 require 'winrm-elevated'
 
 service = WinRM::WinRMWebService.new(...
-elevated_runner = WinRM::Elevated::Runner.new(service)
-result = elevated_runner.powershell_elevated('dir', 'Administrator', 'password')
-puts "Std out: #{result.output}"
+service.create_executor do |executor|
+  elevated_runner = WinRM::Elevated::Runner.new(executor)
+  result = elevated_runner.powershell_elevated('dir', 'Administrator', 'password')
+  puts "Std out: #{result.output}"
+end
+```
+
+### Impersonating a service account
+By passing a `nil` password, winrm-elevated will assume that the command should run as a service account:
+```ruby
+require 'winrm'
+require 'winrm-elevated'
+
+service = WinRM::WinRMWebService.new(...
+service.create_executor do |executor|
+  elevated_runner = WinRM::Elevated::Runner.new(service)
+  result = elevated_runner.powershell_elevated('dir', 'System', nil)
+  puts "Std out: #{result.output}"
+end
 ```
 
 ## How does it work?

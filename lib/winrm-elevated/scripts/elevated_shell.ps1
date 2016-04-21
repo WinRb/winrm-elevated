@@ -1,4 +1,13 @@
-param([String]$username, [String]$password, [String]$encoded_command, [String]$timeout)
+param([String]$username, [String]$password, [String]$encoded_command)
+
+$pass_to_use = $password
+$logon_type = 1
+$logon_type_xml = "<LogonType>Password</LogonType>"
+if($pass_to_use.length -eq 0) {
+  $pass_to_use = $null
+  $logon_type = 5
+  $logon_type_xml = ""
+}
 
 $task_name = "WinRM_Elevated_Shell"
 $out_file = [System.IO.Path]::GetTempFileName()
@@ -10,7 +19,7 @@ $task_xml = @'
   <Principals>
     <Principal id="Author">
       <UserId>{username}</UserId>
-      <LogonType>Password</LogonType>
+      {logon_type}
       <RunLevel>HighestAvailable</RunLevel>
     </Principal>
   </Principals>
@@ -30,7 +39,7 @@ $task_xml = @'
     <Hidden>false</Hidden>
     <RunOnlyIfIdle>false</RunOnlyIfIdle>
     <WakeToRun>false</WakeToRun>
-    <ExecutionTimeLimit>{timeout}</ExecutionTimeLimit>
+    <ExecutionTimeLimit>PT24H</ExecutionTimeLimit>
     <Priority>4</Priority>
   </Settings>
   <Actions Context="Author">
@@ -46,14 +55,14 @@ $arguments = "/c powershell.exe -EncodedCommand $encoded_command &gt; $out_file 
 
 $task_xml = $task_xml.Replace("{arguments}", $arguments)
 $task_xml = $task_xml.Replace("{username}", $username)
-$task_xml = $task_xml.Replace("{timeout}", $timeout)
+$task_xml = $task_xml.Replace("{logon_type}", $logon_type_xml)
 
 $schedule = New-Object -ComObject "Schedule.Service"
 $schedule.Connect()
 $task = $schedule.NewTask($null)
 $task.XmlText = $task_xml
 $folder = $schedule.GetFolder("\")
-$folder.RegisterTaskDefinition($task_name, $task, 6, $username, $password, 1, $null) | Out-Null
+$folder.RegisterTaskDefinition($task_name, $task, 6, $username, $pass_to_use, $logon_type, $null) | Out-Null
 
 $registered_task = $folder.GetTask("\$task_name")
 $registered_task.Run($null) | Out-Null

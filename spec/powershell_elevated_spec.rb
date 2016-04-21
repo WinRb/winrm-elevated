@@ -7,6 +7,13 @@ describe 'powershell elevated runner', integration: true do
     it { should have_no_stderr }
   end
 
+  describe 'ipconfig as Service' do
+    subject(:output) { elevated_runner.powershell_elevated('ipconfig', 'System', nil) }
+    it { should have_exit_code 0 }
+    it { should have_stdout_match(/Windows IP Configuration/) }
+    it { should have_no_stderr }
+  end
+
   describe 'echo \'hello world\' using apostrophes' do
     subject(:output) { elevated_runner.powershell_elevated("echo 'hello world'", username, password) }
     it { should have_exit_code 0 }
