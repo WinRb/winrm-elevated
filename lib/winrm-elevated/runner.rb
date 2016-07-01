@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'erubis'
 require 'winrm'
 require 'winrm-fs'
 require 'securerandom'
@@ -23,12 +24,10 @@ module WinRM
     # Runs PowerShell commands elevated via a scheduled task
     class Runner
       # Creates a new Elevated Runner instance
-      # @param [CommandExecutor] a winrm CommandExecutor
-      def initialize(executor)
-        @executor = executor
-        @winrm_file_transporter = WinRM::FS::Core::FileTransporter.new(executor)
-        @elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell-' + SecureRandom.uuid + '.ps1'
-        @uploaded            = nil
+      # @param [Shell] a winrm Shell
+      def initialize(shell)
+        @shell = shell
+        @winrm_file_transporter = WinRM::FS::Core::FileTransporter.new(shell)
       end
 
       # Run a command or PowerShell script elevated without any of the
@@ -43,24 +42,24 @@ module WinRM
         # if an IO object is passed read it, otherwise assume the contents of the file were passed
         script_text = script.respond_to?(:read) ? script.read : script
 
-        upload_elevated_shell_wrapper_script
-        wrapped_script = wrap_in_scheduled_task(script_text, username, password)
-        @executor.run_cmd(wrapped_script, &block)
+        script_path = upload_elevated_shell_script(script_text)
+        wrapped_script = wrap_in_scheduled_task(script_path, username, password)
+        @shell.run(wrapped_script, &block)
       end
 
       private
 
-      def upload_elevated_shell_wrapper_script
-        return if @uploaded
-        with_temp_file do |temp_file|
-          @winrm_file_transporter.upload(temp_file, @elevated_shell_path)
-          @uploaded = true
+      def upload_elevated_shell_script(script_text)
+        elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell-' + SecureRandom.uuid + '.ps1'
+        with_temp_file(script_text) do |temp_file|
+          @winrm_file_transporter.upload(temp_file, elevated_shell_path)
         end
+        elevated_shell_path
       end
 
-      def with_temp_file
+      def with_temp_file(script_text)
         file = Tempfile.new(['winrm-elevated-shell', 'ps1'])
-        file.write(elevated_shell_script_content)
+        file.write(script_text)
         file.fsync
         file.close
         yield file.path
@@ -73,10 +72,12 @@ module WinRM
         IO.read(File.expand_path('../scripts/elevated_shell.ps1', __FILE__))
       end
 
-      def wrap_in_scheduled_task(script_text, username, password)
-        ps_script = WinRM::PowershellScript.new(script_text)
-        "powershell -executionpolicy bypass -file \"#{@elevated_shell_path}\" " \
-          "-username \"#{username}\" -password \"#{password}\" -encoded_command \"#{ps_script.encoded}\""
+      def wrap_in_scheduled_task(script_path, username, password)
+        Erubis::Eruby.new(elevated_shell_script_content).result(
+          username: username,
+          password: password,
+          script_path: script_path
+        )
       end
     end
   end

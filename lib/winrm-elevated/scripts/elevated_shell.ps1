@@ -1,4 +1,6 @@
-param([String]$username, [String]$password, [String]$encoded_command)
+$username = "<%= username %>"
+$password = "<%= password %>"
+$script_file = "<%= script_path %>"
 
 $pass_to_use = $password
 $logon_type = 1
@@ -51,7 +53,7 @@ $task_xml = @'
 </Task>
 '@
 
-$arguments = "/c powershell.exe -EncodedCommand $encoded_command &gt; $out_file 2&gt;$err_file"
+$arguments = "/c powershell.exe -File $script_file &gt; $out_file 2&gt;$err_file"
 
 $task_xml = $task_xml.Replace("{arguments}", $arguments)
 $task_xml = $task_xml.Replace("{username}", $username)
@@ -98,6 +100,7 @@ do {
 
 del $out_file
 del $err_file
+del $script_file
 
 $exit_code = $registered_task.LastTaskResult
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null

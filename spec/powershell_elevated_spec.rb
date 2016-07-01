@@ -75,19 +75,14 @@ describe 'powershell elevated runner', integration: true do
       # TODO: Option to parse CLIXML
       # expect(output.output).to eq("Hello\n, world!")
       # expect(output.stderr).to eq(", world!")
-      expect(output.stderr).to eq(
-        "#< CLIXML\r\n<Objs Version=\"1.1.0.1\" " \
-        "xmlns=\"http://schemas.microsoft.com/powershell/2004/04\">" \
-        "<S S=\"Error\">, world!_x000D__x000A_</S></Objs>\r\n")
+      expect(output.stderr).to eq(", world!\r\n")
       expect(output.stderr).to eq(@captured_stderr)
     end
 
     it 'should have output' do
       # TODO: Option to parse CLIXML
       # expect(output.output).to eq("Hello\n, world!")
-      expect(output.output).to eq("Hello\r\n#< CLIXML\r\n<Objs Version=\"1.1.0.1\" " \
-        "xmlns=\"http://schemas.microsoft.com/powershell/2004/04\">" \
-        "<S S=\"Error\">, world!_x000D__x000A_</S></Objs>\r\n")
+      expect(output.output).to eq("Hello\r\n, world!\r\n")
     end
   end
 end
