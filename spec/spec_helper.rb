@@ -9,8 +9,8 @@ module ConnectionHelper
     WinRM::Connection.new(winrm_config)
   end
 
-  def elevated_runner
-    @elevated_runner ||= WinRM::Elevated::Runner.new(winrm_connection.shell(:powershell))
+  def elevated_shell
+    @elevated_shell ||= winrm_connection.shell(:elevated)
   end
 
   def winrm_config

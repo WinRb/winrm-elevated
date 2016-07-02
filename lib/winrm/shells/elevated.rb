@@ -20,31 +20,45 @@ require 'winrm-fs'
 require 'securerandom'
 
 module WinRM
-  module Elevated
+  module Shells
     # Runs PowerShell commands elevated via a scheduled task
-    class Runner
-      # Creates a new Elevated Runner instance
-      # @param [Shell] a winrm Shell
-      def initialize(shell)
-        @shell = shell
-        @winrm_file_transporter = WinRM::FS::Core::FileTransporter.new(shell)
+    class Elevated
+      # Create a new elevated shell
+      # @param connection_opts [ConnectionOpts] The WinRM connection options
+      # @param transport [HttpTransport] The WinRM SOAP transport
+      # @param logger [Logger] The logger to log diagnostic messages to
+      def initialize(connection_opts, transport, logger)
+        @logger = logger
+        @username = connection_opts[:user]
+        @password = connection_opts[:password]
+        @shell = Powershell.new(connection_opts, transport, logger)
+        @winrm_file_transporter = WinRM::FS::Core::FileTransporter.new(@shell)
       end
+
+      # @return [String] The admin user name to execute the scheduled task as
+      attr_accessor :username
+
+      # @return [String] The admin user password
+      attr_accessor :password
 
       # Run a command or PowerShell script elevated without any of the
       # restrictions that WinRM puts in place.
       #
       # @param [String] The command or PS script to wrap in a scheduled task
-      # @param [String] The admin user name to execute the scheduled task as
-      # @param [String] The admin user password
       #
-      # @return [Hash] :stdout and :stderr
-      def powershell_elevated(script, username, password, &block)
+      # @return [WinRM::Output] :stdout and :stderr
+      def run(command, &block)
         # if an IO object is passed read it, otherwise assume the contents of the file were passed
-        script_text = script.respond_to?(:read) ? script.read : script
+        script_text = command.respond_to?(:read) ? command.read : command
 
         script_path = upload_elevated_shell_script(script_text)
         wrapped_script = wrap_in_scheduled_task(script_path, username, password)
         @shell.run(wrapped_script, &block)
+      end
+
+      # Closes the shell if one is open
+      def close
+        @shell.close
       end
 
       private
@@ -70,7 +84,7 @@ module WinRM
       end
 
       def elevated_shell_script_content
-        IO.read(File.expand_path('../scripts/elevated_shell.ps1', __FILE__))
+        IO.read(File.expand_path('../../../winrm-elevated/scripts/elevated_shell.ps1', __FILE__))
       end
 
       def wrap_in_scheduled_task(script_path, username, password)
