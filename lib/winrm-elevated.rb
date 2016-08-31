@@ -15,11 +15,4 @@
 # limitations under the License.
 
 require 'winrm'
-require_relative 'winrm-elevated/runner'
-
-module WinRM
-  # WinRM File System
-  module Elevated
-    # Top level module code
-  end
-end
+require_relative 'winrm/shells/elevated'

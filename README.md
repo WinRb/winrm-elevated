@@ -8,11 +8,12 @@ This gem allows you to break out of the magical WinRM constraints thus allowing 
 require 'winrm'
 require 'winrm-elevated'
 
-service = WinRM::WinRMWebService.new(...
-service.create_executor do |executor|
-  elevated_runner = WinRM::Elevated::Runner.new(executor)
-  result = elevated_runner.powershell_elevated('dir', 'Administrator', 'password')
-  puts "Std out: #{result.output}"
+conn = WinRM::Connection.new(...
+conn.shell(:elevated) do |shell|
+  shell.run('$PSVersionTable') do |stdout, stderr|
+    STDOUT.print stdout
+    STDERR.print stderr
+  end
 end
 ```
 
@@ -22,11 +23,14 @@ By passing a `nil` password, winrm-elevated will assume that the command should 
 require 'winrm'
 require 'winrm-elevated'
 
-service = WinRM::WinRMWebService.new(...
-service.create_executor do |executor|
-  elevated_runner = WinRM::Elevated::Runner.new(service)
-  result = elevated_runner.powershell_elevated('dir', 'System', nil)
-  puts "Std out: #{result.output}"
+conn = WinRM::Connection.new(...
+conn.shell(:elevated) do |shell|
+  shell.username = 'System'
+  shell.password = nil
+  shell.run('$PSVersionTable') do |stdout, stderr|
+    STDOUT.print stdout
+    STDERR.print stderr
+  end
 end
 ```
 
@@ -34,9 +38,9 @@ end
 
 The gem works by creating a new logon session local to the Windows box by using a scheduled task. After this point WinRM is just used to read output from the scheduled task via a log file.
 
-1. The command you'd like to run outside the WinRM context is encoded and placed inside the PowerShell script elevated_shell.ps1.
-2. The script is uploaded to the machine over WinRM.
-3. The script is executed over WinRM and the script does the following:
+1. The command you'd like to run outside the WinRM context is saved to a temporary file.
+2. This file is uploaded to the machine over WinRM.
+3. A script is executed over WinRM and does the following:
   1. Scheduled task is created which will execute your command and redirect stdout and stderr to a location known by elevated_shell.ps1.
   2. The scheduled task is executed.
   3. elevated_shell.ps1 polls the stdout and stderr log files and writes them back to WinRM. The script continues in this loop until the scheduled task is complete.
