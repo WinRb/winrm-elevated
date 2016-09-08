@@ -53,7 +53,7 @@ $task_xml = @'
 </Task>
 '@
 
-$arguments = "/c powershell.exe -executionpolicy bypass -File $script_file &gt; $out_file 2&gt;$err_file"
+$arguments = "/c powershell.exe -executionpolicy bypass -NoProfile -File $script_file &gt; $out_file 2&gt;$err_file"
 
 $task_xml = $task_xml.Replace("{arguments}", $arguments)
 $task_xml = $task_xml.Replace("{username}", $username)
