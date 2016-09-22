@@ -1,5 +1,13 @@
 # WinRM-Elevated Gem Changelog
 
+# 1.0.1
+- Fix to avoid profile conflicts
+- Fix inadequate Execution Policy errors
+
+# 1.0.0
+- Adjust to comply with winrm v2 APIs
+- Expose implementation as a class of `WinRM::Shells`
+
 # 0.4.0
 - Initialize `Elevated::Runner` with a `CommandExecutor` instead of a `WinrmService` client
 - Run commands from newer winrm executor
