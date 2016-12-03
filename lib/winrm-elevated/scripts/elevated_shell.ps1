@@ -1,7 +1,8 @@
-$username = "<%= username %>"
-$password = "<%= password %>"
-$script_file = "<%= script_path %>"
+$username = '<%= username %>'
+$password = '<%= password %>'
+$script_file = '<%= script_path %>'
 
+$interactive = '<%= interactive_logon %>'
 $pass_to_use = $password
 $logon_type = 1
 $logon_type_xml = "<LogonType>Password</LogonType>"
@@ -9,6 +10,10 @@ if($pass_to_use.length -eq 0) {
   $pass_to_use = $null
   $logon_type = 5
   $logon_type_xml = ""
+}
+if($interactive -eq 'true') {
+  $logon_type = 3
+  $logon_type_xml = "<LogonType>InteractiveTokenOrPassword</LogonType>"
 }
 
 $task_name = "WinRM_Elevated_Shell"
@@ -98,9 +103,12 @@ do {
   $err_cur_line = SlurpOutput $err_file $err_cur_line 'err'
 } while (!($registered_task.state -eq 3))
 
-del $out_file
-del $err_file
-del $script_file
+# We'll make a best effort to clean these files
+# But a reboot could possibly end the task while the process
+# still runs and locks the file. If we can't delete we don't want to fail
+try { Remove-Item $out_file -ErrorAction Stop } catch {}
+try { Remove-Item $err_file -ErrorAction Stop } catch {}
+try { Remove-Item $script_file -ErrorAction Stop } catch {}
 
 $exit_code = $registered_task.LastTaskResult
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null

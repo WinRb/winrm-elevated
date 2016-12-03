@@ -6,7 +6,7 @@ platform:
 
 environment:
   winrm_user: test_user
-  winrm_password: Pass@word1
+  winrm_password: Pa$$word1
 
   matrix:
     - ruby_version: "21"
