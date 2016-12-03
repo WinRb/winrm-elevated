@@ -1,5 +1,10 @@
 # WinRM-Elevated Gem Changelog
 
+# 1.1.0
+- Allow tasks to be configured for interactive logon
+- Fix broken credentials when they contain dollar signs
+- Do not fail when temporary files cannot be deleted
+
 # 1.0.1
 - Fix to avoid profile conflicts
 - Fix inadequate Execution Policy errors
