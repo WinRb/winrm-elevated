@@ -2,6 +2,7 @@ $username = '<%= username %>'
 $password = '<%= password %>'
 $script_file = '<%= script_path %>'
 
+$interactive = '<%= interactive_logon %>'
 $pass_to_use = $password
 $logon_type = 1
 $logon_type_xml = "<LogonType>Password</LogonType>"
@@ -9,6 +10,10 @@ if($pass_to_use.length -eq 0) {
   $pass_to_use = $null
   $logon_type = 5
   $logon_type_xml = ""
+}
+if($interactive -eq 'true') {
+  $logon_type = 3
+  $logon_type_xml = "<LogonType>InteractiveTokenOrPassword</LogonType>"
 }
 
 $task_name = "WinRM_Elevated_Shell"

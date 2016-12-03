@@ -31,6 +31,7 @@ module WinRM
         @logger = logger
         @username = connection_opts[:user]
         @password = connection_opts[:password]
+        @interactive_logon = false
         @shell = Powershell.new(connection_opts, transport, logger)
         @winrm_file_transporter = WinRM::FS::Core::FileTransporter.new(@shell)
       end
@@ -40,6 +41,9 @@ module WinRM
 
       # @return [String] The admin user password
       attr_accessor :password
+
+      # @return [Bool] Using an interactive logon
+      attr_accessor :interactive_logon
 
       # Run a command or PowerShell script elevated without any of the
       # restrictions that WinRM puts in place.
@@ -91,7 +95,8 @@ module WinRM
         Erubis::Eruby.new(elevated_shell_script_content).result(
           username: username,
           password: password,
-          script_path: script_path
+          script_path: script_path,
+          interactive_logon: interactive_logon
         )
       end
     end
