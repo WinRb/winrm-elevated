@@ -98,9 +98,12 @@ do {
   $err_cur_line = SlurpOutput $err_file $err_cur_line 'err'
 } while (!($registered_task.state -eq 3))
 
-del $out_file
-del $err_file
-del $script_file
+# We'll make a best effort to clean these files
+# But a reboot could possibly end the task while the process
+# still runs and locks the file. If we can't delete we don't want to fail
+try { Remove-Item $out_file -ErrorAction Stop } catch {}
+try { Remove-Item $err_file -ErrorAction Stop } catch {}
+try { Remove-Item $script_file -ErrorAction Stop } catch {}
 
 $exit_code = $registered_task.LastTaskResult
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null
