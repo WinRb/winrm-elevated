@@ -1,6 +1,6 @@
-$username = "<%= username %>"
-$password = "<%= password %>"
-$script_file = "<%= script_path %>"
+$username = '<%= username %>'
+$password = '<%= password %>'
+$script_file = '<%= script_path %>'
 
 $pass_to_use = $password
 $logon_type = 1
