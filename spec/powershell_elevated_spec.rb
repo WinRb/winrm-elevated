@@ -25,6 +25,13 @@ describe 'powershell elevated runner', integration: true do
     it { should have_no_stderr }
   end
 
+  describe 'UTF-8 characters in pipeline' do
+    subject(:output) { elevated_shell.run("Write-Host 'Ай-ти отдел'") }
+    it { should have_exit_code 0 }
+    it { should have_stdout_match(/Ай-ти отдел/) }
+    it { should have_no_stderr }
+  end
+
   describe 'ipconfig with incorrect argument -z' do
     subject(:output) { elevated_shell.run('ipconfig 127.0.0.1 -z') }
     it { should have_exit_code 1 }

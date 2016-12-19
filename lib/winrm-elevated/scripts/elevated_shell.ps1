@@ -58,7 +58,7 @@ $task_xml = @'
 </Task>
 '@
 
-$arguments = "/c powershell.exe -executionpolicy bypass -NoProfile -File $script_file &gt; $out_file 2&gt;$err_file"
+$arguments = "/c powershell.exe -executionpolicy bypass -NoProfile -Command `"[Console]::OutputEncoding = New-Object -typename System.Text.UTF8Encoding;Invoke-Expression (Get-Content $script_file -Encoding UTF8 | Out-String)`" &gt; $out_file 2&gt;$err_file"
 
 $task_xml = $task_xml.Replace("{arguments}", $arguments)
 $task_xml = $task_xml.Replace("{username}", $username)
@@ -83,7 +83,7 @@ while ( (!($registered_task.state -eq 4)) -and ($sec -lt $timeout) ) {
 
 function SlurpOutput($file, $cur_line, $out_type) {
   if (Test-Path $file) {
-    get-content $file | select -skip $cur_line | ForEach {
+    get-content $file -Encoding UTF8 | select -skip $cur_line | ForEach {
       $cur_line += 1
       if ($out_type -eq 'err') {
         $host.ui.WriteErrorLine("$_")

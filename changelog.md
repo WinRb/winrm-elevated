@@ -1,5 +1,8 @@
 # WinRM-Elevated Gem Changelog
 
+# 1.1.1
+- Fix rendering non ascii UTF-8 characters
+
 # 1.1.0
 - Allow tasks to be configured for interactive logon
 - Fix broken credentials when they contain dollar signs
