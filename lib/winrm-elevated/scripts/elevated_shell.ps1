@@ -97,11 +97,13 @@ function SlurpOutput($file, $cur_line, $out_type) {
 
 $err_cur_line = 0
 $out_cur_line = 0
+$timeout = <%= execution_timeout %>
+$startDate = Get-Date
 do {
   Start-Sleep -m 100
   $out_cur_line = SlurpOutput $out_file $out_cur_line 'out'
   $err_cur_line = SlurpOutput $err_file $err_cur_line 'err'
-} while (!($registered_task.state -eq 3))
+} while( (!($registered_task.state -eq 3)) -and ($startDate.AddSeconds($timeout) -gt (Get-Date)) )
 
 # We'll make a best effort to clean these files
 # But a reboot could possibly end the task while the process

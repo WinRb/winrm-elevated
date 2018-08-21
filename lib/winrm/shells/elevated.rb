@@ -33,6 +33,7 @@ module WinRM
         @interactive_logon = false
         @shell = Powershell.new(connection_opts, transport, logger)
         @winrm_file_transporter = WinRM::FS::Core::FileTransporter.new(@shell)
+        @execution_timeout = 86_400
       end
 
       # @return [String] The admin user name to execute the scheduled task as
@@ -43,6 +44,9 @@ module WinRM
 
       # @return [Bool] Using an interactive logon
       attr_accessor :interactive_logon
+
+      # @return [Integer] Timeout for the task to be executed
+      attr_accessor :execution_timeout
 
       # Run a command or PowerShell script elevated without any of the
       # restrictions that WinRM puts in place.
@@ -95,7 +99,8 @@ module WinRM
           username: username,
           password: password,
           script_path: script_path,
-          interactive_logon: interactive_logon
+          interactive_logon: interactive_logon,
+          execution_timeout: execution_timeout
         }
 
         b = binding
