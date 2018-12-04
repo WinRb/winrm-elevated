@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = %w[-x test/ -x examples/]
   s.extra_rdoc_files = %w[README.md LICENSE]
 
-  s.required_ruby_version = '>= 1.9.0'
+  s.required_ruby_version = '>= 2.2.0'
   s.add_runtime_dependency 'winrm', '~> 2.0'
   s.add_runtime_dependency 'winrm-fs', '~> 1.0'
   s.add_development_dependency 'rake', '>= 10.3', '< 13'
