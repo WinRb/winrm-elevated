@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require 'date'
 
 version = File.read(File.expand_path('../VERSION', __FILE__)).strip
@@ -14,15 +13,13 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/WinRb/winrm-elevated'
 
   s.summary = 'Ruby library for running commands as elevated'
-  s.description = <<-EOF
-    Ruby library for running commands via WinRM as elevated through a scheduled task
-  EOF
+  s.description = 'Ruby library for running commands via WinRM as elevated through a scheduled task'
   s.license = 'Apache-2.0'
 
   s.files = Dir.glob('{bin,lib,spec}/**/*') + %w[LICENSE README.md]
   s.require_path = 'lib'
-  s.rdoc_options = %w(-x test/ -x examples/)
-  s.extra_rdoc_files = %w(README.md LICENSE)
+  s.rdoc_options = %w[-x test/ -x examples/]
+  s.extra_rdoc_files = %w[README.md LICENSE]
 
   s.required_ruby_version = '>= 1.9.0'
   s.add_runtime_dependency 'winrm', '~> 2.0'
