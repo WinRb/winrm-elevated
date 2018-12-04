@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9.0'
   s.add_runtime_dependency 'winrm', '~> 2.0'
   s.add_runtime_dependency 'winrm-fs', '~> 1.0'
+  s.add_development_dependency 'rake', '>= 10.3', '< 13'
   s.add_development_dependency 'rspec', '~> 3.2'
-  s.add_development_dependency 'rake', '~> 10.3'
   s.add_development_dependency 'rubocop', '~> 0.28'
 end
