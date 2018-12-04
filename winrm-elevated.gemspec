@@ -1,6 +1,6 @@
 require 'date'
 
-version = File.read(File.expand_path('../VERSION', __FILE__)).strip
+version = File.read(File.expand_path('VERSION', __dir__)).strip
 
 Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY

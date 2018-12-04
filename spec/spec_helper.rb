@@ -15,9 +15,7 @@ module ConnectionHelper
   def winrm_config
     unless @winrm_config
       path = File.expand_path("#{File.dirname(__FILE__)}/config.yml")
-      unless File.exist?(path)
-        path = File.expand_path("#{File.dirname(__FILE__)}/config-example.yml")
-      end
+      path = File.expand_path("#{File.dirname(__FILE__)}/config-example.yml") unless File.exist?(path)
       @winrm_config = symbolize_keys(YAML.safe_load(File.read(path)))
       @winrm_config[:endpoint] = ENV['winrm_endpoint'] if ENV['winrm_endpoint']
       @winrm_config[:user] = ENV['winrm_user'] if ENV['winrm_user']

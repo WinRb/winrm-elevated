@@ -1,4 +1,4 @@
-describe 'powershell elevated runner', integration: true do
+describe 'powershell elevated runner', integration: true do # rubocop: disable Metrics/BlockLength
   describe 'ipconfig' do
     subject(:output) { elevated_shell.run('ipconfig') }
     it { should have_exit_code 0 }

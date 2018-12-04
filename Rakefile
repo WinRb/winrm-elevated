@@ -5,7 +5,7 @@ require 'rubocop/rake_task'
 require 'bundler/gem_tasks'
 
 # Change to the directory of this file.
-Dir.chdir(File.expand_path('../', __FILE__))
+Dir.chdir(File.expand_path(__dir__))
 
 RSpec::Core::RakeTask.new(:spec) do |task|
   task.pattern = 'spec/*_spec.rb'
