@@ -16,9 +16,8 @@ Gem::Specification.new do |s|
   s.description = 'Ruby library for running commands via WinRM as elevated through a scheduled task'
   s.license = 'Apache-2.0'
 
-  s.files = Dir.glob('{bin,lib,spec}/**/*') + %w[LICENSE README.md]
+  s.files = Dir.glob('{bin,lib}/**/*') + %w[LICENSE README.md]
   s.require_path = 'lib'
-  s.rdoc_options = %w[-x test/ -x examples/]
   s.extra_rdoc_files = %w[README.md LICENSE]
 
   s.required_ruby_version = '>= 2.2.0'
@@ -26,5 +25,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'winrm-fs', '~> 1.0'
   s.add_development_dependency 'rake', '>= 10.3', '< 13'
   s.add_development_dependency 'rspec', '~> 3.2'
-  s.add_development_dependency 'rubocop', '~> 0.51'
+  s.add_development_dependency 'rubocop', '~> 0.51.0'
 end
