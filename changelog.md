@@ -1,4 +1,6 @@
 # WinRM-Elevated Gem Changelog
+# 1.1.1
+- Slim gem and resolve several rubocop warnings
 
 # 1.1.0
 - Allow tasks to be configured for interactive logon
