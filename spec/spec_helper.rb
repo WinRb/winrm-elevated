@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require 'winrm'
 require 'winrm-elevated'
 require_relative 'matchers'
@@ -16,10 +15,8 @@ module ConnectionHelper
   def winrm_config
     unless @winrm_config
       path = File.expand_path("#{File.dirname(__FILE__)}/config.yml")
-      unless File.exist?(path)
-        path = File.expand_path("#{File.dirname(__FILE__)}/config-example.yml")
-      end
-      @winrm_config = symbolize_keys(YAML.load(File.read(path)))
+      path = File.expand_path("#{File.dirname(__FILE__)}/config-example.yml") unless File.exist?(path)
+      @winrm_config = symbolize_keys(YAML.safe_load(File.read(path)))
       @winrm_config[:endpoint] = ENV['winrm_endpoint'] if ENV['winrm_endpoint']
       @winrm_config[:user] = ENV['winrm_user'] if ENV['winrm_user']
       @winrm_config[:password] = ENV['winrm_password'] if ENV['winrm_password']
@@ -35,7 +32,6 @@ module ConnectionHelper
     winrm_config[:password]
   end
 
-  # rubocop:disable Metrics/MethodLength
   def symbolize_keys(hash)
     hash.each_with_object({}) do |(key, value), result|
       new_key = case key
@@ -50,7 +46,6 @@ module ConnectionHelper
       result
     end
   end
-  # rubocop:enable Metrics/MethodLength
 end
 
 RSpec.configure do |config|

@@ -1,5 +1,4 @@
-# encoding: UTF-8
-describe 'powershell elevated runner', integration: true do
+describe 'powershell elevated runner', integration: true do # rubocop: disable Metrics/BlockLength
   describe 'ipconfig' do
     subject(:output) { elevated_shell.run('ipconfig') }
     it { should have_exit_code 0 }
@@ -32,11 +31,11 @@ describe 'powershell elevated runner', integration: true do
 
   describe 'Math area calculation' do
     subject(:output) do
-      cmd = <<-EOH
+      cmd = <<-COMMAND
         $diameter = 4.5
         $area = [Math]::pow([Math]::PI * ($diameter/2), 2)
         Write-Host $area
-      EOH
+      COMMAND
       elevated_shell.run(cmd)
     end
     it { should have_exit_code 0 }
@@ -57,10 +56,10 @@ describe 'powershell elevated runner', integration: true do
 
   describe 'capturing output from Write-Host and Write-Error' do
     subject(:output) do
-      script = <<-eos
+      script = <<-COMMAND
       Write-Host 'Hello'
       $host.ui.WriteErrorLine(', world!')
-      eos
+      COMMAND
 
       @captured_stdout = ''
       @captured_stderr = ''

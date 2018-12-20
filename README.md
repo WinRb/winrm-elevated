@@ -32,7 +32,7 @@ conn.shell(:elevated) do |shell|
     STDERR.print stderr
   end
 end
-``` 
+```
 
 ### Using an interactive task
 By setting `interactive_logon` to `true`, the scheduled task will be configured to use an interactive logon allowing all command activity to be viewable from a RDP session if logged on as the same user as the winrm credentials:
@@ -45,7 +45,7 @@ conn.shell(:elevated) do |shell|
   shell.interactive_logon = true
   shell.run('notepad.exe')
 end
-``` 
+```
 
 ## How does it work?
 
