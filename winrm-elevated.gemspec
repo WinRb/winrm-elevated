@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.extra_rdoc_files = %w[README.md LICENSE]
 
-  s.required_ruby_version = '>= 2.2.0'
+  s.required_ruby_version = '>= 2.3.0'
   s.add_runtime_dependency 'winrm', '~> 2.0'
   s.add_runtime_dependency 'winrm-fs', '~> 1.0'
   s.add_development_dependency 'rake', '>= 10.3', '< 13'

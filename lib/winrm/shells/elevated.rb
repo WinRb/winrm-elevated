@@ -75,7 +75,7 @@ module WinRM
       end
 
       def with_temp_file(script_text)
-        file = Tempfile.new(['winrm-elevated-shell', 'ps1'])
+        file = Tempfile.new(%w[winrm-elevated-shell ps1])
         file.write(script_text)
         file.write("\r\n$Host.SetShouldExit($LASTEXITCODE)")
         file.fsync
