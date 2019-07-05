@@ -21,8 +21,7 @@ end
 
 RSpec::Matchers.define :have_no_stdout do
   match do |actual_output|
-    stdout = actual_output.stdout
-    stdout == '\r\n' || stdout == ''
+    ['', '\r\n'].include? actual_output.stdout
   end
   failure_message do |actual_output|
     "expected that '#{actual_output.stdout}' would have no stdout"
@@ -31,8 +30,7 @@ end
 
 RSpec::Matchers.define :have_no_stderr do
   match do |actual_output|
-    stderr = actual_output.stderr
-    stderr == '\r\n' || stderr == ''
+    ['', '\r\n'].include? actual_output.stderr
   end
   failure_message do |actual_output|
     "expected that '#{actual_output.stderr}' would have no stderr"
