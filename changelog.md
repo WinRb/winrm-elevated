@@ -1,4 +1,7 @@
 # WinRM-Elevated Gem Changelog
+# 1.1.2
+- Replace erubis with erubi
+
 # 1.1.1
 - Slim gem and resolve several rubocop warnings
 
