@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'erubis'
+require 'erubi'
 require 'winrm'
 require 'winrm-fs'
 require 'securerandom'
@@ -91,12 +91,17 @@ module WinRM
       end
 
       def wrap_in_scheduled_task(script_path, username, password)
-        Erubis::Eruby.new(elevated_shell_script_content).result(
+        context = {
           username: username,
           password: password,
           script_path: script_path,
           interactive_logon: interactive_logon
-        )
+        }
+
+        b = binding
+        locals = context.collect { |k, _| "#{k} = context[#{k.inspect}]; " }
+        b.eval(locals.join)
+        b.eval(Erubi::Engine.new(elevated_shell_script_content).src)
       end
     end
   end
