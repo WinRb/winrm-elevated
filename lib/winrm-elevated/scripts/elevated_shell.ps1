@@ -111,6 +111,9 @@ try { Remove-Item $err_file -ErrorAction Stop } catch {}
 try { Remove-Item $script_file -ErrorAction Stop } catch {}
 
 $exit_code = $registered_task.LastTaskResult
+
+try { Unregister-ScheduledTask -TaskName $task_name -Confirm:$false } catch {}
+
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null
 
 exit $exit_code
