@@ -16,7 +16,7 @@ if($interactive -eq 'true') {
   $logon_type_xml = "<LogonType>InteractiveTokenOrPassword</LogonType>"
 }
 
-$task_name = "WinRM_Elevated_Shell"
+$task_name = "WinRM_Elevated_Shell_" + (New-Guid).Guid
 $out_file = [System.IO.Path]::GetTempFileName()
 $err_file = [System.IO.Path]::GetTempFileName()
 
@@ -111,6 +111,9 @@ try { Remove-Item $err_file -ErrorAction Stop } catch {}
 try { Remove-Item $script_file -ErrorAction Stop } catch {}
 
 $exit_code = $registered_task.LastTaskResult
+
+try { Unregister-ScheduledTask -TaskName $task_name -Confirm:$false } catch {}
+
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null
 
 exit $exit_code
