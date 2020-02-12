@@ -16,7 +16,7 @@ if($interactive -eq 'true') {
   $logon_type_xml = "<LogonType>InteractiveTokenOrPassword</LogonType>"
 }
 
-$task_name = "WinRM_Elevated_Shell_" + (New-Guid).Guid
+$task_name = "WinRM_Elevated_Shell_" + [guid]::NewGuid()
 $out_file = [System.IO.Path]::GetTempFileName()
 $err_file = [System.IO.Path]::GetTempFileName()
 
