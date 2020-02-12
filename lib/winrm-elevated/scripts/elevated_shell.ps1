@@ -64,21 +64,26 @@ $task_xml = $task_xml.Replace("{arguments}", $arguments)
 $task_xml = $task_xml.Replace("{username}", $username)
 $task_xml = $task_xml.Replace("{logon_type}", $logon_type_xml)
 
-$schedule = New-Object -ComObject "Schedule.Service"
-$schedule.Connect()
-$task = $schedule.NewTask($null)
-$task.XmlText = $task_xml
-$folder = $schedule.GetFolder("\")
-$folder.RegisterTaskDefinition($task_name, $task, 6, $username, $pass_to_use, $logon_type, $null) | Out-Null
+try {
+    $schedule = New-Object -ComObject "Schedule.Service"
+    $schedule.Connect()
+    $task = $schedule.NewTask($null)
+    $task.XmlText = $task_xml
+    $folder = $schedule.GetFolder("\")
+    $folder.RegisterTaskDefinition($task_name, $task, 6, $username, $pass_to_use, $logon_type, $null) | Out-Null
 
-$registered_task = $folder.GetTask("\$task_name")
-$registered_task.Run($null) | Out-Null
+    $registered_task = $folder.GetTask("\$task_name")
+    $registered_task.Run($null) | Out-Null
 
-$timeout = 10
-$sec = 0
-while ( (!($registered_task.state -eq 4)) -and ($sec -lt $timeout) ) {
-  Start-Sleep -s 1
-  $sec++
+    $timeout = 10
+    $sec = 0
+    while ( (!($registered_task.state -eq 4)) -and ($sec -lt $timeout) ) {
+        Start-Sleep -s 1
+        $sec++
+    }
+} catch {
+    Write-Error -ErrorRecord $PSItem
+    exit $PSItem.Exception.HResult
 }
 
 function SlurpOutput($file, $cur_line, $out_type) {
