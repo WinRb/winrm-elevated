@@ -1,4 +1,8 @@
 # WinRM-Elevated Gem Changelog
+# 1.2.1
+- Backport GUID usage for PowerShell < 5
+- Wrap task setup within try block and exit on caught errors
+
 # 1.2.0
 - Add configurable timeouts for execution
 - Remove old task and add a unique name
