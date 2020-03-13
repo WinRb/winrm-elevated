@@ -83,4 +83,32 @@ describe 'powershell elevated runner', integration: true do # rubocop: disable M
       expect(output.output).to eq("Hello\r\n, world!\r\n")
     end
   end
+
+  describe 'cleaning old tasks from TaskScheduler' do
+    before(:context) do
+      # This command creates a task with a LastRunTime at 11/30/1999
+      old_task_cmd = <<-COMMAND
+        $task_name = "WinRM_Elevated_Shell_TaskGeneratedByCI_" + [guid]::NewGuid()
+        SCHTASKS /CREATE /SC DAILY /TN $task_name /TR "sleep 3600"
+      COMMAND
+      elevated_shell.run(old_task_cmd)
+    end
+
+    describe 'check that old task is cleaned' do
+      subject(:output) do
+        cmd = <<-COMMAND
+          @(SCHTASKS /QUERY /V /FO CSV | ConvertFrom-CSV | Select -Property "TaskName" | Where-Object {
+            ($_.TaskName -like "*WinRM_Elevated_Shell_TaskGeneratedByCI_*")
+          }).Count
+        COMMAND
+        elevated_shell.run(cmd)
+      end
+
+      it 'should clean properly old task' do
+        expect(output.stdout.strip).to eq('0')
+        should have_exit_code 0
+        should have_no_stderr
+      end
+    end
+  end
 end
