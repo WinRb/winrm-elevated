@@ -73,7 +73,8 @@ module WinRM
 
       def upload_elevated_shell_script(script_text)
         elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell-' + SecureRandom.uuid + '.ps1'
-        @winrm_file_transporter.upload(StringIO.new("#{script_text}\r\n$Host.SetShouldExit($LASTEXITCODE)"), elevated_shell_path)
+        script_text_with_exit = "#{script_text}\r\n$Host.SetShouldExit($LASTEXITCODE)"
+        @winrm_file_transporter.upload(StringIO.new(script_text_with_exit), elevated_shell_path)
         elevated_shell_path
       end
 
