@@ -119,7 +119,17 @@ try { Remove-Item $script_file -ErrorAction Stop } catch {}
 
 $exit_code = $registered_task.LastTaskResult
 
-try { Unregister-ScheduledTask -TaskName $task_name -Confirm:$false } catch {}
+try {
+  # Clean current task
+  $folder.DeleteTask($task_name, 0)
+  # Clean old tasks if required
+  $old_tasks_filter_date = [datetime]::Now.AddSeconds(<%= -1 * execution_timeout %>)
+  $old_tasks_to_kill = $folder.GetTasks(0) | Select Name,LastRunTime | Where-Object {
+    ($_.Name -like "WinRM_Elevated_Shell*") -and ($_.LastRunTime -le $old_tasks_filter_date) -and ($_.Name -ne $task_name)
+  }
+  $old_tasks_to_kill | ForEach-Object { try { $folder.DeleteTask($_.Name, 0) } catch {} }
+}
+catch {}
 
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($schedule) | Out-Null
 
