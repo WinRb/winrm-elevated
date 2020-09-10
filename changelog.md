@@ -1,7 +1,8 @@
 # WinRM-Elevated Gem Changelog
+
 # 1.2.2
 - Use StringIO instead of Tempfile to write task script
-- Oprimize requires
+- Optimize requires
 - Cleanup orphaned tasks
 
 # 1.2.1
@@ -16,7 +17,7 @@
 - Replace erubis with erubi
 
 # 1.1.1
-- Slim gem and resolve several rubocop warnings
+- Slim gem and resolve several RuboCop warnings
 
 # 1.1.0
 - Allow tasks to be configured for interactive logon
