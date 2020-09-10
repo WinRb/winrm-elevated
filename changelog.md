@@ -1,4 +1,9 @@
 # WinRM-Elevated Gem Changelog
+# 1.2.2
+- Use StringIO instead of Tempfile to write task script
+- Oprimize requires
+- Cleanup orphaned tasks
+
 # 1.2.1
 - Backport GUID usage for PowerShell < 5
 - Wrap task setup within try block and exit on caught errors
