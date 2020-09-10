@@ -1,4 +1,4 @@
-require 'winrm'
+require 'winrm' unless defined?(WinRM::Connection)
 require 'winrm-elevated'
 require_relative 'matchers'
 

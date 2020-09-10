@@ -14,9 +14,9 @@
 # limitations under the License.
 
 require 'erubi'
-require 'winrm'
+require 'winrm' unless defined?(WinRM::Connection)
 require 'winrm-fs'
-require 'securerandom'
+require 'securerandom' unless defined?(SecureRandom)
 require 'stringio'
 
 module WinRM
