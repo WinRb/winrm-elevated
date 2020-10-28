@@ -54,6 +54,22 @@ describe 'powershell elevated runner', integration: true do # rubocop: disable M
     it { should match(/Windows IP Configuration/) }
   end
 
+  describe 'special characters' do
+    subject(:output) { elevated_shell.run("echo \"#{text}\"") }
+    # Sample text using more than ASCII, but still compatible with occidental OEM encodings.
+    let(:text) do
+      'Dès Noël, où un zéphyr haï me vêt de glaçons würmiens, je dîne d’exquis rôtis de bœuf au kir, ' \
+      'à l’aÿ d’âge mûr, &cætera.'
+    end
+
+    it { should have_exit_code 0 }
+    it 'outputs a transliterated version of the original string' do
+      expect(output.stdout).to eq "Dès Noël, où un zéphyr haï me vêt de glaçons würmiens, je dîne d'exquis " \
+                                  "rôtis de bouf au kir, à l'aÿ d'âge mûr, &cætera.\r\n"
+    end
+    it { should have_no_stderr }
+  end
+
   describe 'capturing output from Write-Host and Write-Error' do
     subject(:output) do
       script = <<-COMMAND
