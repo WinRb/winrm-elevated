@@ -58,7 +58,7 @@ $task_xml = @'
 </Task>
 '@
 
-$arguments = "/U /c powershell.exe -executionpolicy bypass -NoProfile -File $script_file &gt; $out_file 2&gt;$err_file"
+$arguments = "/A /c powershell.exe -executionpolicy bypass -NoProfile -File $script_file &gt; $out_file 2&gt;$err_file"
 
 $task_xml = $task_xml.Replace("{arguments}", $arguments)
 $task_xml = $task_xml.Replace("{username}", $username)
@@ -88,7 +88,7 @@ try {
 
 function SlurpOutput($file, $cur_line, $out_type) {
   if (Test-Path $file) {
-    get-content $file -Encoding Unicode | Select-Object -skip $cur_line | ForEach-Object {
+    get-content $file -Encoding Ascii | Select-Object -skip $cur_line | ForEach-Object {
       $cur_line += 1
       if ($out_type -eq 'err') {
         $host.ui.WriteErrorLine("$_")
