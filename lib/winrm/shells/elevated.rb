@@ -73,8 +73,9 @@ module WinRM
 
       def upload_elevated_shell_script(script_text)
         elevated_shell_path = 'c:/windows/temp/winrm-elevated-shell-' + SecureRandom.uuid + '.ps1'
-        script_text_with_exit = "#{script_text}\r\n$Host.SetShouldExit($LASTEXITCODE)"
-        @winrm_file_transporter.upload(StringIO.new(script_text_with_exit), elevated_shell_path)
+        # Prepend the content of the file with an UTF-8 BOM for Windows to read it as such instead of the default
+        # Windows-XXXX encoding, and convert script_text accordingly if needed.
+        script_text_with_exit = "\uFEFF#{script_text.encode(Encoding::UTF_8)}\r\n$Host.SetShouldExit($LASTEXITCODE)"        @winrm_file_transporter.upload(StringIO.new(script_text_with_exit), elevated_shell_path)
         elevated_shell_path
       end
 
