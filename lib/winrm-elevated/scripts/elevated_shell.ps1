@@ -88,7 +88,7 @@ try {
 
 function SlurpOutput($file, $cur_line, $out_type) {
   if (Test-Path $file) {
-    get-content $file -Encoding UTF8 | Select-Object -skip $cur_line | ForEach-Object {
+    get-content $file | Select-Object -skip $cur_line | ForEach-Object {
       $cur_line += 1
       if ($out_type -eq 'err') {
         $host.ui.WriteErrorLine("$_")
