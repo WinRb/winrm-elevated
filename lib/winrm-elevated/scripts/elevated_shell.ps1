@@ -97,14 +97,15 @@ function SlurpOutput($file, $cur_line, $out_type) {
     try {
       $enc = [System.Text.Encoding]::GetEncoding($Host.CurrentCulture.TextInfo.OEMCodePage)
       $bytes = [System.Byte[]]::new($fs.Length)
-      $fs.Read($bytes, 0, $fs.Length)
-      $text = $enc.GetString($bytes)
-      $text.Split(@("`r`n", "`r", "`n"), [StringSplitOptions]::None) | Select-Object -skip $cur_line | ForEach-Object {
-        $cur_line += 1
-        if ($out_type -eq 'err') {
-          $host.ui.WriteErrorLine("$_")
-        } else {
-          $host.ui.WriteLine("$_")
+      if ($fs.Read($bytes, 0, $fs.Length) -gt 0) {
+        $text = $enc.GetString($bytes)
+        $text.Split(@("`r`n", "`r", "`n"), [StringSplitOptions]::None) | Select-Object -skip $cur_line | ForEach-Object {
+          $cur_line += 1
+          if ($out_type -eq 'err') {
+            $host.ui.WriteErrorLine("$_")
+          } else {
+            $host.ui.WriteLine("$_")
+          }
         }
       }
     }
