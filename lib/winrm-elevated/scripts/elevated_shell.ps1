@@ -88,17 +88,27 @@ try {
 
 function SlurpOutput($file, $cur_line, $out_type) {
   if (Test-Path $file) {
-    $enc = [System.Text.Encoding]::GetEncoding($Host.CurrentCulture.TextInfo.OEMCodePage)
-    $bytes = [System.IO.File]::ReadAllBytes($file)
-    $text = $enc.GetString($bytes)
-    $text.Split(@("`r`n", "`r", "`n"), [StringSplitOptions]::None) | Select-Object -skip $cur_line | ForEach-Object {
-      $cur_line += 1
-      if ($out_type -eq 'err') {
-        $host.ui.WriteErrorLine("$_")
-      } else {
-        $host.ui.WriteLine("$_")
+    $fs = New-Object -TypeName System.IO.FileStream -ArgumentList @(
+      $file,
+      [system.io.filemode]::Open,
+      [System.io.FileAccess]::Read,
+      [System.IO.FileShare]::ReadWrite
+    )
+    try {
+      $enc = [System.Text.Encoding]::GetEncoding($Host.CurrentCulture.TextInfo.OEMCodePage)
+      $bytes = [System.Byte[]]::new($fs.Length)
+      $fs.Read($bytes, 0, $fs.Length)
+      $text = $enc.GetString($bytes)
+      $text.Split(@("`r`n", "`r", "`n"), [StringSplitOptions]::None) | Select-Object -skip $cur_line | ForEach-Object {
+        $cur_line += 1
+        if ($out_type -eq 'err') {
+          $host.ui.WriteErrorLine("$_")
+        } else {
+          $host.ui.WriteLine("$_")
+        }
       }
     }
+    finally { $fs.Close() }
   }
   return $cur_line
 }
