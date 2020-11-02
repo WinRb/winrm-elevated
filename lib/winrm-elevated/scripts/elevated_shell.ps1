@@ -88,7 +88,10 @@ try {
 
 function SlurpOutput($file, $cur_line, $out_type) {
   if (Test-Path $file) {
-    get-content $file | Select-Object -skip $cur_line | ForEach-Object {
+    $enc = [System.Text.Encoding]::GetEncoding($Host.CurrentCulture.TextInfo.OEMCodePage)
+    $bytes = [System.IO.File]::ReadAllBytes($file)
+    $text = $enc.GetString($bytes)
+    $text.Split(@("`r`n", "`r", "`n"), [StringSplitOptions]::None) | Select-Object -skip $cur_line | ForEach-Object {
       $cur_line += 1
       if ($out_type -eq 'err') {
         $host.ui.WriteErrorLine("$_")
