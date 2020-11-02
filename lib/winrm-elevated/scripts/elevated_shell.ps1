@@ -99,7 +99,7 @@ function SlurpOutput($file, $cur_line, $out_type) {
       $bytes = [System.Byte[]]::new($fs.Length)
       if ($fs.Read($bytes, 0, $fs.Length) -gt 0) {
         $text = $enc.GetString($bytes)
-        $text.Split(@("`r`n", "`r", "`n"), [StringSplitOptions]::None) | Select-Object -skip $cur_line | ForEach-Object {
+        $text.TrimEnd("`n").TrimEnd("`r").Split(@("`r`n", "`n"), [StringSplitOptions]::None) | Select-Object -skip $cur_line | ForEach-Object {
           $cur_line += 1
           if ($out_type -eq 'err') {
             $host.ui.WriteErrorLine("$_")
