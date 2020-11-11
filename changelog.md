@@ -1,5 +1,8 @@
 # WinRM-Elevated Gem Changelog
 
+# 1.2.3
+- Fix encoding corruptions
+
 # 1.2.2
 - Use StringIO instead of Tempfile to write task script
 - Optimize requires
