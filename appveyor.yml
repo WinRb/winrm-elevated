@@ -28,7 +28,7 @@ install:
   - ps: Write-Host $env:PATH
   - ps: ruby --version
   - ps: gem --version
-  - ps: gem install bundler --quiet --no-document
+  - ps: gem update --system 3.2.3 
   - ps: bundler --version
 
 build_script:
