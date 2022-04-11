@@ -20,12 +20,12 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.extra_rdoc_files = %w[README.md LICENSE]
 
-  s.required_ruby_version = '>= 2.3.0'
+  s.required_ruby_version = '>= 2.5.0'
   s.add_runtime_dependency 'erubi', '~> 1.8'
   s.add_runtime_dependency 'winrm', '~> 2.0'
   s.add_runtime_dependency 'winrm-fs', '~> 1.0'
   s.add_development_dependency 'rake', '>= 10.3', '< 13'
   s.add_development_dependency 'rexml'
   s.add_development_dependency 'rspec', '~> 3.2'
-  s.add_development_dependency 'rubocop', '~> 0.51.0'
+  s.add_development_dependency 'rubocop', '~> 1.26.0'
 end
