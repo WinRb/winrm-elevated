@@ -1,19 +1,21 @@
+inherit_from: .rubocop_todo.yml
+
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-Style/FileName:
+Naming/FileName:
   Enabled: false
 
 Style/Encoding:
   Enabled: true
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
 
 Metrics/MethodLength:
   Max: 20
 
-ClassLength:
+Metrics/ClassLength:
   Max: 250
 
 Metrics/AbcSize:
