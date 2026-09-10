@@ -1,4 +1,5 @@
 # Runs PowerShell commands as elevated over Windows Remote Management (WinRM) via a scheduled task
+[![CI](https://github.com/WinRb/winrm-elevated/actions/workflows/ci.yml/badge.svg)](https://github.com/WinRb/winrm-elevated/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/winrm-elevated.svg)](http://badge.fury.io/rb/winrm-elevated)
 
 This gem allows you to break out of the magical WinRM constraints thus allowing to reach out to network shares and even install Windows updates, .NET, SQL Server etc.
@@ -71,7 +72,7 @@ first.
 3. Run the unit and integration tests (bundle exec rake integration)
 4. Commit your changes (git commit -am "Added a sweet feature")
 5. Push to the branch (git push origin my_feature_branch)
-6. Create a pull requst from your branch into master (Please be sure to provide enough detail for us to cipher what this change is doing)
+6. Create a pull request from your branch into main (Please be sure to provide enough detail for us to cipher what this change is doing)
 
 ### Running the tests
 
@@ -87,7 +88,7 @@ Once you have the dependencies, you can run the unit tests with `rake`:
 $ bundle exec rake spec
 ```
 
-To run the integration tests you will need a Windows box with the WinRM service properly configured. Its easiest to use the Vagrant Windows box in the Vagrantilfe of this repo.
+To run the integration tests you will need a Windows box with the WinRM service properly configured.
 
 1. Create a Windows VM with WinRM configured (see above).
 2. Copy the config-example.yml to config.yml - edit this file with your WinRM connection details.
