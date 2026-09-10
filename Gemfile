@@ -9,6 +9,7 @@ gem 'rubocop', require: false
 # The following were removed from the stdlib in Ruby 4.0 but are still
 # required by rake < 13 and winrm-fs (transitively)
 if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('4.0')
+  gem 'benchmark', require: false
   gem 'logger', require: false
   gem 'ostruct', require: false
 end
