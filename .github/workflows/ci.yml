@@ -19,7 +19,11 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
       - name: Audit dependencies
-        run: bundle exec bundle-audit check --update
+        # CVE-2026-85396 (rubyzip path traversal) is ignored until winrm-fs relaxes
+        # its 'rubyzip ~> 2.0' pin: winrm-fs 1.3.5 is the newest release and still
+        # requires rubyzip ~> 2.0, so the patched rubyzip >= 3.4.0 cannot be resolved.
+        # See: https://github.com/advisories/GHSA-47m2-wp7j-p9vc
+        run: bundle exec bundle-audit check --update --ignore CVE-2026-85396
       - name: Audit Ruby runtime
         # CVE-2026-41316 is an ERB flaw fixed in Ruby 4.0.3 and not yet backported.
         # Ignored on affected rubies only. See:
