@@ -2,7 +2,7 @@ _You'll need write access to the repository to create a release. Publishing is h
 
 ## Cutting a release
 
-1. On your release branch (e.g. `main`), edit [changelog.md](https://github.com/WinRb/winrm-elevated/blob/main/changelog.md) to finalize the new version number and list of all changes.
+1. On your release branch (e.g. `main`), edit [CHANGELOG.md](https://github.com/WinRb/winrm-elevated/blob/main/CHANGELOG.md) to finalize the new version number and list of all changes.
 2. Bump [VERSION](https://github.com/WinRb/winrm-elevated/blob/main/VERSION) to the version you picked in previous step.
 3. **Final check**: make sure all tests are green, and that `rake build` succeeds. If not, merge any fixes back to the release branch and go to step 1.
 4. [Draft a new release](https://github.com/WinRb/winrm-elevated/releases/new) on Github.
@@ -16,4 +16,4 @@ _You'll need write access to the repository to create a release. Publishing is h
 - Update `required_ruby_version` in [winrm-elevated.gemspec](https://github.com/WinRb/winrm-elevated/blob/main/winrm-elevated.gemspec)
 - Update the test matrix in [ci.yml](https://github.com/WinRb/winrm-elevated/blob/main/.github/workflows/ci.yml)
 - Update [README](https://github.com/WinRb/winrm-elevated/blob/main/README.md) with the correct support matrix
-- Note the updated requirement in [changelog.md](https://github.com/WinRb/winrm-elevated/blob/main/changelog.md)
+- Note the updated requirement in [CHANGELOG.md](https://github.com/WinRb/winrm-elevated/blob/main/CHANGELOG.md)
