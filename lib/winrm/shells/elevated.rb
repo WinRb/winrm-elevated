@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'erubi'
+require 'erb'
 require 'winrm' unless defined?(WinRM::Connection)
 require 'winrm-fs'
 require 'securerandom' unless defined?(SecureRandom)
@@ -96,7 +96,7 @@ module WinRM
         b = binding
         locals = context.collect { |k, _| "#{k} = context[#{k.inspect}]; " }
         b.eval(locals.join)
-        b.eval(Erubi::Engine.new(elevated_shell_script_content).src)
+        ERB.new(elevated_shell_script_content).result(b)
       end
     end
   end
