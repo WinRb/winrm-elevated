@@ -3,6 +3,12 @@
 ## Unreleased
 
 
+## [1.2.4]
+
+- Replace erubi with the Ruby standard library ERB; the erubi runtime dependency is gone
+- Consolidate the legacy changelog into this CHANGELOG.md
+- Remove the dead AppVeyor CI configuration
+
 ## [1.2.3]
 
 - Fix encoding corruptions
