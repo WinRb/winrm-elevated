@@ -4,6 +4,10 @@
 
 This gem allows you to break out of the magical WinRM constraints thus allowing to reach out to network shares and even install Windows updates, .NET, SQL Server etc.
 
+## Supported Ruby Versions
+
+Ruby 3.1 or higher is supported. The gem can still be installed on Ruby 3.0, but 3.0 is end-of-life and not tested.
+
 ## Running commands elevated
 ```ruby
 require 'winrm'
